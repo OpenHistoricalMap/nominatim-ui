@@ -2,4 +2,4 @@
 // The file should be named 'config.theme.js'
 
 Nominatim_Config.Nominatim_API_Endpoint = 'https://nominatim-staging.openhistoricalmap.org/';
-Nominatim_Config.Page_Title = 'My Server demo;
+Nominatim_Config.Page_Title = 'My Server demo';
