@@ -1,4 +1,4 @@
-// You can overwrite any defaults in dist/theme/config.theme.js (see
+// You can overwrite any defaults in dist/nominatim-ui/theme/config.theme.js (see
 // *.js.example file in that directory)
 
 let Nominatim_Config = {
