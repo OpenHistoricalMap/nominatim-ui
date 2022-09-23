@@ -1,11 +1,11 @@
-// You can overwrite any defaults in dist/nominatim-ui/theme/config.theme.js (see
+// You can overwrite any defaults in dist/theme/config.theme.js (see
 // *.js.example file in that directory)
 
 let Nominatim_Config = {
   Page_Title: 'Nominatim Demo',
 
   // Where Nominatim API runs. Remember to add port if needed and trailing slash.
-  Nominatim_API_Endpoint: 'https://nominatim-staging.openhistoricalmap.org/',
+  Nominatim_API_Endpoint: 'https://nominatim.openhistoricalmap.org/',
   // Alternatively provide a function callback
   // Nominatim_API_Endpoint: function (endpoint) {
   //   var url = 'http://localhost/nominatim/';
