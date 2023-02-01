@@ -38,3 +38,12 @@ logo image, colors, welcome and help text.
 ## License
 
 The source code is available under a [GPLv2 license](LICENSE).
+
+## Deploy to Staging and Production
+
+Nominatim-UI has been configured in [OHM-deploy](https://github.com/OpenHistoricalMap/ohm-deploy) to deployment in production and staging, you just need to update the gitsha you want to launch [here](https://github.com/OpenHistoricalMap/ohm-deploy/blob/main/.github/workflows/frontend-nominatim.yaml#L36). Gtihub action will automatically deploy the changes.
+
+Changes can be see it at:
+
+- Production: https://nominatim.openhistoricalmap.org/
+- Staging: https://nominatim-staging.openhistoricalmap.org/
