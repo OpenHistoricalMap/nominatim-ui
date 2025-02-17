@@ -1,4 +1,5 @@
 <script>
+  import { onDestroy } from 'svelte';
   import UrlSubmitForm from '../components/UrlSubmitForm.svelte';
 
   import { zoomLevels } from '../lib/helpers.js';
@@ -7,6 +8,7 @@
   export let lat = '';
   export let lon = '';
   export let zoom = '';
+  export let api_request_params = {};
 
   function gotoCoordinates(newlat, newlon, newzoom) {
     if (newlat === null || newlon === null) return;
@@ -18,7 +20,7 @@
     refresh_page('reverse', params);
   }
 
-  map_store.subscribe(map => {
+  const unsubscribe = map_store.subscribe(map => {
     if (map) {
       map.on('click', (e) => {
         let coords = e.latlng.wrap();
@@ -29,13 +31,18 @@
 
   // common mistake is to copy&paste latitude and longitude into the 'lat' search box
   function maybeSplitLatitude(e) {
-    var coords_split = e.target.value.split(',');
+    var coords_split = e.target.value.split(/,|%2C/);
     if (coords_split.length === 2) {
       document.querySelector('input[name=lat]').value = L.Util.trim(coords_split[0]);
       document.querySelector('input[name=lon]').value = L.Util.trim(coords_split[1]);
     }
   }
 
+  function set_api_param(e) {
+    document.querySelector('input[name=' + e.target.dataset.apiParam + ']').value = e.target.value;
+  }
+
+  onDestroy(unsubscribe);
 </script>
 
 <UrlSubmitForm page="reverse">
@@ -53,10 +60,10 @@
            on:change={maybeSplitLatitude} />
   </div>
   <div class="col-auto">
-    <a id="switch-coords"
+    <button id="switch-coords"
        on:click|preventDefault|stopPropagation={() => gotoCoordinates(lon, lat)}
        class="btn btn-outline-secondary btn-sm"
-       title="switch lat and lon">&lt;&gt;</a>
+       title="switch lat and lon">&lt;&gt;</button>
   </div>
   <div class="col-auto">
     <label for="reverse-lon">lon</label>
@@ -81,10 +88,26 @@
       {/each}
     </select>
   </div>
+  <input type="hidden"
+         name="layer" value="{api_request_params.layer || ''}" />
   <div class="col-auto">
     <button type="submit" class="btn btn-primary btn-sm mx-1">Search</button>
   </div>
 </UrlSubmitForm>
+
+<!-- Additional options -->
+<details id="searchAdvancedOptions" class="mt-2">
+  <summary><small>Advanced options</small></summary>
+  <ul>
+    <li>
+      <label for="option_layer">Layer</label>
+      <input id="option_layer" name="layer" placeholder="e.g. address,poi,railway,natural,manmade"
+        value="{api_request_params.layer || ''}"
+        data-api-param="layer" on:change={set_api_param}
+        class="form-control form-control-sm d-inline w-auto api-param-setting">
+    </li>
+  </ul>
+</details>
 
 <style>
   label {
@@ -98,6 +121,24 @@
     cursor: pointer;
     padding: 2px;
     margin: 5px;
+  }
+
+  #searchAdvancedOptions ul {
+    list-style-type: none;
+    padding: 0;
+    font-size: 0.85rem;
+  }
+
+  #searchAdvancedOptions li {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: 1px dotted #ccc;
+    margin-right: 1em;
+  }
+
+  #searchAdvancedOptions label {
+    margin-right: 0.5em;
   }
 
   @media (max-width: 850px) {

@@ -33,10 +33,14 @@ let Nominatim_Config = {
   Map_Default_Lat: 20.0,
   Map_Default_Lon: 0.0,
   Map_Default_Zoom: 2,
+  // https://leafletjs.com/reference.html#map-fitbounds
+  // Example: [[0,-180], [90,180]]
+  // If set then _Lat, _Lon, _Zoom have no effect
+  Map_Default_Bounds: null,
 
   // For what {x}, {y} etc stand for see
-  // https://leafletjs.com/reference-1.6.0.html#tilelayer
-  Map_Tile_URL: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
+  // https://leafletjs.com/reference-1.9.1.html#tilelayer
+  Map_Tile_URL: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
 
   // Can be text or HTML. To hide set to ''
   Map_Tile_Attribution: '<a href="https://osm.org/copyright">OpenStreetMap contributors</a>'

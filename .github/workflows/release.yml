@@ -10,11 +10,11 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16.x'
+          node-version: '18.x'
 
       - name: Install dependencies
         run: yarn install
@@ -33,7 +33,6 @@ jobs:
           GITREF: ${{ github.ref }}
 
 
-      - uses: AButler/upload-release-assets@v2.0
+      - uses: softprops/action-gh-release@v1
         with:
           files: 'artifacts/*'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}

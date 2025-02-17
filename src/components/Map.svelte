@@ -28,6 +28,10 @@
       ],
       zoom: Nominatim_Config.Map_Default_Zoom
     });
+    if (typeof Nominatim_Config.Map_Default_Bounds !== 'undefined'
+      && Nominatim_Config.Map_Default_Bounds) {
+      map.fitBounds(Nominatim_Config.Map_Default_Bounds);
+    }
 
     if (attribution && attribution.length) {
       L.control.attribution({ prefix: '<a href="https://leafletjs.com/">Leaflet</a>' }).addTo(map);
@@ -123,13 +127,16 @@
     if (viewbox) {
       let coords = viewbox.split(','); // <x1>,<y1>,<x2>,<y2>
       let bounds = L.latLngBounds([coords[1], coords[0]], [coords[3], coords[2]]);
-      L.rectangle(bounds, {
+      let viewbox_on_map = L.rectangle(bounds, {
         color: '#69d53e',
         weight: 3,
         dashArray: '5 5',
         opacity: 0.8,
-        fill: false
-      }).addTo(map);
+        fill: false,
+        interactive: false
+      });
+      map.addLayer(viewbox_on_map);
+      dataLayers.push(viewbox_on_map);
     }
 
     if (!aFeature) return;
@@ -179,10 +186,10 @@
 </script>
 
 <MapPosition />
-<div id="map" use:mapAction />
-<div id="show-map-position" class="leaflet-bar btn btn-sm btn-outline-secondary"
+<div id="map" use:mapAction></div>
+<button id="show-map-position" class="leaflet-bar btn btn-sm btn-outline-secondary"
       on:click|stopPropagation={show_map_position_click}
->show map bounds</div>
+>show map bounds</button>
 
 <style>
   #map {

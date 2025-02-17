@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 const reverse_only = !!process.env.REVERSE_ONLY;
 
@@ -61,16 +61,25 @@ describe('Details Page', function () {
     });
 
     it('should have OSM link', async function () {
+      const url = 'https://www.openstreetmap.org/relation/1155956';
 
-      assert.strictEqual((await page.$$('a[href="https://www.openstreetmap.org/relation/1155956"]')).length, 2);
+      assert.strictEqual((await page.$$eval(`a[href="${url}"]`, (links) => links.length)), 2);
     });
 
-    // Reverse-only installation have no search index, therefor no keywords
+    // Reverse-only installation have no search index, therefore no keywords
     if (!reverse_only) {
+      it('should have a link to postcode which includes country code', async function () {
+        const url = 'search.html?postalcode=9490&country=li';
+
+        assert.strictEqual((await page.$$eval(`a[href="${url}"]`, (links) => links.length)), 1);
+      });
+
       it('should change url and add new header on clicking display keywords', async function () {
         let current_url;
         let display_headers;
-        let [display_keywords_btn] = await page.$x("//a[contains(text(), 'display keywords')]");
+        let [display_keywords_btn] = await page.$$(
+          "xpath/.//a[contains(text(), 'display keywords')]"
+        );
 
         await display_keywords_btn.evaluate(node => node.click());
         await page.waitForNavigation();
@@ -87,9 +96,37 @@ describe('Details Page', function () {
       });
     }
 
+
+    it('should support case-insensitive search, can navigate to new page', async function () {
+      let input_field = await page.$('input[type=edit]');
+      await input_field.click({ clickCount: 3 });
+      await input_field.type('w375257537');
+      await page.click('button[type=submit]');
+
+      await page.waitForSelector('a[href="https://www.openstreetmap.org/way/375257537"]');
+      assert.ok((await page.$eval('.container h1', el => el.textContent)).includes('Taj Mahal'));
+    });
+  });
+
+  describe('With street search - a place that is parent of buildings', function () {
+    before(async function () {
+      page = await browser.newPage();
+      await page.goto('http://localhost:9999/details.html?osmtype=W&osmid=32703083');
+      await page.waitForSelector('.container .row');
+    });
+
+    after(async function () {
+      await page.close();
+    });
+
     it('should change page url on clicking display child places', async function () {
+      let page_content = await page.$eval('body', el => el.textContent);
+      assert.ok(page_content.includes('Gafleistrasse'));
+
       let current_url;
-      let [child_places_btn] = await page.$x("//a[contains(text(), 'display child places')]");
+      let [child_places_btn] = await page.$$(
+        "xpath/.//a[contains(text(), 'display child places')]"
+      );
 
       await child_places_btn.evaluate(node => node.click());
       await page.waitForNavigation();
@@ -98,18 +135,8 @@ describe('Details Page', function () {
       current_url = new URL(await page.url());
       assert.strictEqual(current_url.searchParams.get('hierarchy'), '1');
 
-      let page_content = await page.$eval('body', el => el.textContent);
-      assert.ok(page_content.includes('Alte Landstrasse')); // one of the streets
-    });
-
-    it('should support case-insenstive search, can navigate to new page', async function () {
-      let input_field = await page.$('input[type=edit]');
-      await input_field.click({ clickCount: 3 });
-      await input_field.type('w375257537');
-      await page.click('button[type=submit]');
-
-      await page.waitForSelector('a[href="https://www.openstreetmap.org/way/375257537"]');
-      assert.ok((await page.$eval('.container h1', el => el.textContent)).includes('Taj Mahal'));
+      page_content = await page.$eval('body', el => el.textContent);
+      assert.ok(page_content.includes('bus_stop')); // parent of several bus stops
     });
   });
 
@@ -128,7 +155,7 @@ describe('Details Page', function () {
     it('should display No Name, no keywords, no hierarchy', async function () {
       let page_content = await page.$eval('body', el => el.textContent);
 
-      assert.ok(page_content.includes('Name No Name'));
+      assert.ok(page_content.includes('NameNo Name'));
       if (!process.env.REVERSE_ONLY) {
         assert.ok(page_content.includes('Place has no keywords'));
       }

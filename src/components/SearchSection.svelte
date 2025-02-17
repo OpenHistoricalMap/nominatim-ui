@@ -7,8 +7,9 @@
   export let bStructuredSearch = false;
   export let api_request_params = {};
   let sViewBox;
-  let lat;
-  let lon;
+  // lat,lon are later set in update_reverse_link()
+  let lat; // eslint-disable-line no-unused-vars
+  let lon; // eslint-disable-line no-unused-vars
 
   function map_viewbox_as_string(map) {
     var bounds = map.getBounds();
@@ -79,10 +80,14 @@
 
 <ul class="nav nav-tabs">
   <li class="nav-item">
-    <a class="nav-link" class:active={!bStructuredSearch} data-bs-toggle="tab" href="#simple">Simple</a>
+    <a class="nav-link" class:active={!bStructuredSearch} data-bs-toggle="tab" href="#simple">
+      Simple
+    </a>
   </li>
   <li class="nav-item">
-    <a class="nav-link" class:active={bStructuredSearch} data-bs-toggle="tab" href="#structured">Structured</a>
+    <a class="nav-link" class:active={bStructuredSearch} data-bs-toggle="tab" href="#structured">
+      Structured
+    </a>
   </li>
 </ul>
 
@@ -99,14 +104,23 @@
       </div>
       <div class="col-auto">
         <button type="submit" class="btn btn-primary btn-sm mx-1">Search</button>
-        <input type="hidden" name="viewbox" value="{sViewBox || ''}" />
-        <input type="hidden" name="dedupe" value="{api_request_params.dedupe === 0 ? 0 : 1}" />
-        <input type="hidden" name="bounded" value="{api_request_params.bounded ? 1 : ''}" />
-        <input type="hidden" name="accept-language" value="{api_request_params['accept-language'] || ''}" />
-        <input type="hidden" name="countrycodes" value="{api_request_params.countrycodes || ''}"
-                                                      pattern="^[a-zA-Z]{'{2}'}(,[a-zA-Z]{'{2}'})*$" />
-        <input type="hidden" name="limit" value="{api_request_params.limit || ''}" />
-        <input type="hidden" name="polygon_threshold" value="{api_request_params.polygon_threshold || ''}" />
+        <input type="hidden"
+               name="viewbox" value="{sViewBox || ''}" />
+        <input type="hidden"
+               name="dedupe" value="{api_request_params.dedupe === 0 ? 0 : 1}" />
+        <input type="hidden"
+               name="bounded" value="{api_request_params.bounded ? 1 : ''}" />
+        <input type="hidden"
+               name="accept-language"value="{api_request_params['accept-language'] || ''}" />
+        <input type="hidden"
+               name="countrycodes" value="{api_request_params.countrycodes || ''}"
+                                   pattern="^[a-zA-Z]{'{2}'}(,[a-zA-Z]{'{2}'})*$" />
+        <input type="hidden"
+               name="limit" value="{api_request_params.limit || ''}" />
+        <input type="hidden"
+               name="polygon_threshold" value="{api_request_params.polygon_threshold || ''}" />
+        <input type="hidden"
+               name="layer" value="{api_request_params.layer || ''}" />
       </div>
     </UrlSubmitForm>
   </div>
@@ -144,14 +158,23 @@
       </div>
       <div class="col-auto">
         <button type="submit" class="btn btn-primary btn-sm">Search</button>
-        <input type="hidden" name="viewbox" value="{sViewBox || ''}" />
-        <input type="hidden" name="dedupe" value="{api_request_params.dedupe === 0 ? 0 : 1}" />
-        <input type="hidden" name="bounded" value="{api_request_params.bounded ? 1 : ''}" />
-        <input type="hidden" name="accept-language" value="{api_request_params['accept-language'] || ''}" />
-        <input type="hidden" name="countrycodes" value="{api_request_params.countrycodes || ''}"
-                                                pattern="^[a-zA-Z]{'{2}'}(,[a-zA-Z]{'{2}'})*$" />
-        <input type="hidden" name="limit" value="{api_request_params.limit || ''}" />
-        <input type="hidden" name="polygon_threshold" value="{api_request_params.polygon_threshold || ''}" />
+        <input type="hidden"
+               name="viewbox" value="{sViewBox || ''}" />
+        <input type="hidden"
+               name="dedupe" value="{api_request_params.dedupe === 0 ? 0 : 1}" />
+        <input type="hidden"
+               name="bounded" value="{api_request_params.bounded ? 1 : ''}" />
+        <input type="hidden"
+               name="accept-language" value="{api_request_params['accept-language'] || ''}" />
+        <input type="hidden"
+               name="countrycodes" value="{api_request_params.countrycodes || ''}"
+                                   pattern="^[a-zA-Z]{'{2}'}(,[a-zA-Z]{'{2}'})*$" />
+        <input type="hidden"
+               name="limit" value="{api_request_params.limit || ''}" />
+        <input type="hidden"
+               name="polygon_threshold" value="{api_request_params.polygon_threshold || ''}" />
+        <input type="hidden"
+               name="layer" value="{api_request_params.layer || ''}" />
       </div>
     </UrlSubmitForm>
   </div>
@@ -180,14 +203,18 @@
     <li>
       <div class="form-check form-check-inline">
         <label class="form-check-label" for="option_dedupe">deduplicate results</label>
-        <input type="checkbox" class="form-check-input api-param-setting"
-               id="option_dedupe" checked={api_request_params.dedupe === 0 ? 0 : 1} on:change={set_dedupe}>
+        <input type="checkbox"
+               class="form-check-input api-param-setting"
+               id="option_dedupe"
+               checked={api_request_params.dedupe === 0 ? 0 : 1}
+               on:change={set_dedupe}>
       </div>
     </li>
 
     <li>
       <label for="option_limit">Maximum number of results</label>
-      <input type="number" class="form-control form-control-sm d-inline w-auto api-param-setting"
+      <input type="number"
+             class="form-control form-control-sm d-inline w-auto api-param-setting"
              data-api-param="limit" id="option_limit" min="1" max="50"
              value="{api_request_params.limit || ''}"
              on:change={set_api_param}>
@@ -195,15 +222,18 @@
 
     <li>
       <label for="option_polygon_threshold">Polygon simplification</label>
-      <input type="number" class="form-control form-control-sm d-inline w-auto api-param-setting"
-             data-api-param="polygon_threshold" id="option_polygon_threshold" min="0.0"  max="1.0" step="0.001"
+      <input type="number"
+             class="form-control form-control-sm d-inline w-auto api-param-setting"
+             data-api-param="polygon_threshold" id="option_polygon_threshold"
+             min="0.0" max="1.0" step="0.001"
              value="{api_request_params.polygon_threshold || ''}"
              on:change={set_api_param}>
     </li>
 
     <li>
       <label for="accept_lang">Languages</label>
-      <input type="text" placeholder="e.g. en,zh-Hant" class="form-control form-control-sm d-inline w-auto api-param-setting"
+      <input type="text" placeholder="e.g. en,zh-Hant"
+             class="form-control form-control-sm d-inline w-auto api-param-setting"
              data-api-param="accept-language" id="accept_lang" size="15"
              value="{api_request_params['accept-language'] || ''}"
              on:change={set_api_param}>
@@ -211,11 +241,19 @@
 
     <li>
       <label for="option_ccode">Country Codes</label>
-      <input type="text" placeholder="e.g. de,gb" class="form-control form-control-sm d-inline w-auto api-param-setting"
+      <input type="text" placeholder="e.g. de,gb"
+            class="form-control form-control-sm d-inline w-auto api-param-setting"
              data-api-param="countrycodes" id="option_ccode" size="15"
              value="{api_request_params.countrycodes || ''}"
              pattern="^[a-zA-Z]{'{2}'}(,[a-zA-Z]{'{2}'})*$"
              on:change={set_api_param}>
+    </li>
+    <li>
+      <label for="option_layer">Layer</label>
+      <input id="option_layer" name="layer" placeholder="e.g. address,poi,railway,natural,manmade"
+        value="{api_request_params.layer || ''}"
+        data-api-param="layer" on:change={set_api_param}
+        class="form-control form-control-sm d-inline w-auto api-param-setting">
     </li>
   </ul>
 </details>

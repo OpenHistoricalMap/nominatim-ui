@@ -56,10 +56,16 @@
 
   function place_has_keywords(aThisPlace) {
     // Return false if Nominatim API sends 'keywords: { name: [], address: [] }'
+    // Like no longer needed after Nominatim version 4.3
     return (
       aThisPlace.keywords && aThisPlace.keywords.name && aThisPlace.keywords.address
       && (aThisPlace.keywords.name.length > 0 || aThisPlace.keywords.address.length > 0)
     );
+  }
+
+  function country_code(aThisPlace) {
+    let aLine = aThisPlace.address.find((address_line) => address_line.type === 'country_code');
+    return aLine ? aLine.localname : null;
   }
 
   $: {
@@ -94,10 +100,11 @@
         <table id="locationdetails" class="table table-striped table-responsive">
           <tbody>
             <InfoRow title="Name">
-            {#if (Array.isArray(aPlace.names)) }
-              <span class="noname fw-bold">No Name</span>
-            {:else}
+            {#if aPlace.names && typeof (aPlace.names) === 'object'
+              && Object.keys(aPlace.names).length}
               <InfoRowList items={aPlace.names} />
+            {:else}
+              <span class="noname fw-bold">No Name</span>
             {/if}
             </InfoRow>
             <InfoRow title="Type">{aPlace.category}:{aPlace.type}</InfoRow>
@@ -106,7 +113,9 @@
               <InfoRow title="Admin Level">{aPlace.admin_level}</InfoRow>
             {/if}
             <InfoRow title="Search Rank">{aPlace.rank_search}</InfoRow>
-            <InfoRow title="Address Rank">{aPlace.rank_address} ({formatAddressRank(aPlace.rank_address)})</InfoRow>
+            <InfoRow title="Address Rank">
+              {aPlace.rank_address} ({formatAddressRank(aPlace.rank_address)})
+            </InfoRow>
             {#if aPlace.calculated_importance}
               <InfoRow title="Importance">
                   {aPlace.calculated_importance}
@@ -117,18 +126,24 @@
             <InfoRow title="Centre Point (lat,lon)">
                 {aPlace.centroid.coordinates[1]},{aPlace.centroid.coordinates[0]}
             </InfoRow>
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             <InfoRow title="OSM">{@html osmLink(aPlace)}</InfoRow>
             <InfoRow title="Place Id">
                {aPlace.place_id}
-               (<a href="https://nominatim.org/release-docs/develop/api/Output/#place_id-is-not-a-persistent-id">on this server</a>)
+               (<a href="https://nominatim.org/release-docs/develop/api/Output/#place_id-is-not-a-persistent-id">
+                 on this server
+               </a>)
             </InfoRow>
             {#if aPlace.calculated_wikipedia}
+              <!-- eslint-disable-next-line svelte/no-at-html-tags -->
               <InfoRow title="Wikipedia Calculated">{@html wikipediaLink(aPlace)}</InfoRow>
             {/if}
             <InfoRow title="Computed Postcode">
               {#if aPlace.calculated_postcode}
                 {aPlace.calculated_postcode}
-                <DetailsPostcodeHint postcode={aPlace.calculated_postcode} lat={aPlace.centroid.coordinates[1]} lon={aPlace.centroid.coordinates[0]} />
+                <DetailsPostcodeHint postcode={aPlace.calculated_postcode}
+                                     lat={aPlace.centroid.coordinates[1]}
+                                     lon={aPlace.centroid.coordinates[0]} />
               {/if}
             </InfoRow>
             <InfoRow title="Address Tags"><InfoRowList items={aPlace.addresstags} /></InfoRow>
@@ -145,7 +160,7 @@
     <div class="row">
       <div class="col-md-12">
         <h2>Address</h2>
-         <table id="address" class="table table-striped table-small">
+        <table id="address" class="table table-striped table-small">
           <thead>
             <tr>
               <th>Local name</th>
@@ -160,14 +175,19 @@
           <tbody>
             {#if aPlace.address}
               {#each aPlace.address as addressLine}
-                <DetailsOneRow addressLine={addressLine} bMarkUnusedLines={true} bDistanceInMeters={false} />
+                <DetailsOneRow addressLine={addressLine}
+                               bMarkUnusedLines={true}
+                               bDistanceInMeters={false}
+                               sCountryCode={country_code(aPlace)} />
               {/each}
             {/if}
 
             {#if aPlace.linked_places}
               <tr class="all-columns"><td colspan="7"><h2>Linked Places</h2></td></tr>
               {#each aPlace.linked_places as addressLine}
-                <DetailsOneRow addressLine={addressLine} bMarkUnusedLines={true} bDistanceInMeters={true} />
+                <DetailsOneRow addressLine={addressLine}
+                               bMarkUnusedLines={true}
+                               bDistanceInMeters={true} />
               {/each}
             {/if}
 
@@ -212,7 +232,8 @@
 
             <tr class="all-columns"><td colspan="7"><h2>Parent Of</h2></td></tr>
             {#if api_request_params.hierarchy}
-              {#if aPlace.hierarchy && typeof (aPlace.hierarchy) === 'object' && Object.keys(aPlace.hierarchy).length}
+              {#if aPlace.hierarchy && typeof (aPlace.hierarchy) === 'object'
+                && Object.keys(aPlace.hierarchy).length}
                 {#each Object.keys(aPlace.hierarchy) as type}
                   <tr class="all-columns"><td colspan="7"><h3>{type}</h3></td></tr>
                   {#each aPlace.hierarchy[type] as line}
@@ -221,7 +242,7 @@
                 {/each}
 
                 {#if Object.keys(aPlace.hierarchy) > 500}
-                  <p>There are more child objects which are not shown.</p>
+                  <tr><td><p>There are more child objects which are not shown.</p></td></tr>
                 {/if}
               {:else}
                 <tr><td>Place is not parent of other places</td></tr>
@@ -267,7 +288,7 @@
   }
 
   tr.all-columns {
-    background-color: white !important; 
+    background-color: white !important;
     border: none;
   }
   tr.all-columns td {

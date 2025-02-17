@@ -6,8 +6,8 @@
   function handleFormSubmit(event) {
     let form_el = event.target;
     let val = form_el.querySelector('input[type=edit]').value.trim();
-    let type_and_id_match = val.match(/^\s*([NWR])(\d+)\s*$/i)
-                            || val.match(/\/(relation|way|node)\/(\d+)\s*$/);
+    let type_and_id_match = val.match(/^\s*([NWR])(-?\d+)\s*$/i)
+                            || val.match(/\/(relation|way|node)\/(-?\d+)\s*$/);
 
     var params = new URLSearchParams();
     if (type_and_id_match) {
@@ -27,10 +27,15 @@
 <form on:submit|preventDefault={handleFormSubmit} class="form-inline" action="details.html">
   <div class="row g-1">
     <div class="col-auto">
+      <!-- eslint-disable-next-line max-len -->
       <input type="edit"
              class="form-control form-control-sm me-1"
-             pattern="^[NWRnwr]?[0-9]+$|.*openstreetmap.*"
-             value="{api_request_params.osmtype || ''}{api_request_params.osmid || ''}{api_request_params.place_id || ''}" />
+             pattern="^[1-9][0-9]*$|^[NWRnwr]-?[1-9][0-9]*$|.*openstreetmap.*"
+             value="{
+              (api_request_params.osmtype || '')
+              + (api_request_params.osmid || '')
+              + (api_request_params.place_id || '')
+            }" />
       </div>
     <div class="col-auto">
       <button type="submit" class="btn btn-primary btn-sm">Show</button>
@@ -38,7 +43,12 @@
   </div>
 </form>
 <small class="form-text text-muted">
-  OSM type+id (<em>N123</em>, <em>n123</em>, <em>W123</em>, <em>w123</em>, <em>R123</em>, <em>r123</em>),
+  OSM type+id (<em>N123</em>,
+               <em>n123</em>,
+               <em>W123</em>,
+               <em>w123</em>,
+               <em>R123</em>,
+               <em>r123</em>),
   Place id (<em>1234</em>) or
   URL (<em>https://openstreetmap.org/way/123</em>)
 </small>

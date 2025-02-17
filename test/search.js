@@ -1,4 +1,4 @@
-const assert = require('assert');
+import assert from 'assert';
 
 describe('Search Page', function () {
   let page;
@@ -41,18 +41,24 @@ describe('Search Page', function () {
       assert.strictEqual(await map_pos_handle.evaluate(node => node.style.display), 'block');
 
       let map_pos_details = await page.$eval('#map-position-inner', el => el.textContent);
-      map_pos_details = map_pos_details.split(' \n');
-
-      let map_center_coor = map_pos_details[0]
+      map_pos_details = map_pos_details.split('  ');
+      // [
+      //   'map center: 20.00000,0.00000 view on osm.org',
+      //   'map zoom: 2',
+      //   'viewbox: -131.48438,69.16256,131.48438,-48.69096',
+      //   'last click:',
+      //   ' mouse position: 65.69612,103.71094'
+      // ]
+      let map_center_coords = map_pos_details[0]
         .split('map center: ')[1].split(' view')[0].split(',');
       let map_zoom = map_pos_details[1].split('map zoom: ')[1];
       let map_viewbox = map_pos_details[2].split('viewbox: ')[1].split(',');
       let last_click = map_pos_details[3].split('last click: ')[1];
 
-      assert.deepStrictEqual(map_center_coor.length, 2);
+      assert.deepStrictEqual(map_center_coords.length, 2);
       assert.ok(map_zoom);
       assert.deepStrictEqual(map_viewbox.length, 4);
-      assert.deepStrictEqual(last_click, 'undefined');
+      assert.deepStrictEqual(last_click, undefined);
 
       await page.click('#map-position-close a');
       assert.strictEqual(await map_pos_handle.evaluate(node => node.style.display), 'none');
@@ -82,13 +88,15 @@ describe('Search Page', function () {
       assert.strictEqual(current_url.searchParams.get('q'), 'Paris');
     });
 
-    it('should atleast one result', async function () {
+    it('should have at least one result', async function () {
       let results_count = await page.$$eval('#searchresults .result', elements => elements.length);
       assert.ok(results_count > 1);
     });
 
     it('should have show more results button', async function () {
-      let [search_more_btn] = await page.$x("//a[contains(text(), 'Search for more results')]");
+      let [search_more_btn] = await page.$$(
+        "xpath/.//a[contains(text(), 'Search for more results')]"
+      );
       assert.ok(search_more_btn);
     });
 
@@ -141,6 +149,58 @@ describe('Search Page', function () {
       await page.waitForSelector('.container h1');
       page_header = await page.$eval('.container h1', el => el.textContent);
       assert.ok(page_header.includes('Paris'));
+    });
+  });
+
+  describe('Structured search for Paris', function () {
+    before(async function () {
+      page = await browser.newPage();
+      await page.goto('http://localhost:9999/search.html');
+      await page.click(".nav-link[href='#structured']");
+      // await page.screenshot({ path: "./screen.png", fullPage: true });
+      await page.type('input[name=city]', 'Paris');
+      await page.type('input[name=country]', 'USA');
+      await page.click('#structured button[type=submit]');
+      await page.waitForSelector('#searchresults');
+    });
+
+    after(async function () {
+      await page.close();
+    });
+
+    it('should have a HTML page title', async function () {
+      assert.equal(await page.title(), 'Result for Paris, USA | Nominatim Demo');
+    });
+
+    it('should have added search params', async function () {
+      let current_url = new URL(await page.url());
+      assert.strictEqual(current_url.searchParams.get('q'), null);
+      assert.strictEqual(current_url.searchParams.get('city'), 'Paris');
+      assert.strictEqual(current_url.searchParams.get('country'), 'USA');
+    });
+
+    it('should have at least one result', async function () {
+      let results_count = await page.$$eval('#searchresults .result', elements => elements.length);
+      assert.ok(results_count > 1);
+    });
+  });
+
+  describe('Search for OSM URL', function () {
+    before(async function () {
+      page = await browser.newPage();
+      await page.goto('http://localhost:9999/search.html');
+      await page.type('input[name=q]', 'https://www.openstreetmap.org/relation/3459013#map=11/41.2388/-8.3867');
+      await page.click('button[type=submit]');
+      await page.waitForSelector('table#address');
+    });
+
+    after(async function () {
+      await page.close();
+    });
+
+    it('should redirect to detail page search', async function () {
+      assert.equal(await page.title(), 'Details for R3459013 | Nominatim Demo');
+      assert.ok((await page.$eval('.container h1', el => el.textContent)).includes('Porto'));
     });
   });
 });

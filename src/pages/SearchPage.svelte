@@ -28,6 +28,7 @@
       dedupe: (!search_params.has('dedupe') || search_params.get('dedupe') === '1') ? 1 : 0,
       'accept-language': search_params.get('accept-language'),
       countrycodes: search_params.get('countrycodes'),
+      layer: search_params.get('layer'),
       limit: search_params.get('limit'),
       polygon_threshold: search_params.get('polygon_threshold'),
       exclude_place_ids: search_params.get('exclude_place_ids'),
@@ -45,12 +46,21 @@
       fetch_from_api('search', api_request_params, function (data) {
         results_store.set(data);
 
-        update_html_title('Result for ' + api_request_params.q);
-
         if (anyStructuredFieldsSet) {
+          update_html_title('Result for ' + [
+            api_request_params.street,
+            api_request_params.city,
+            api_request_params.county,
+            api_request_params.state,
+            api_request_params.country,
+            api_request_params.postalcode
+          ].filter((text) => text && text.length > 1).join(', '));
+
           document.querySelector(".nav-tabs a[href='#structured']").click();
           document.querySelector('input[name=street]').focus();
         } else {
+          update_html_title('Result for ' + api_request_params.q);
+
           document.querySelector('input[name=q]').focus();
         }
       });
