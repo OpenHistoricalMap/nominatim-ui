@@ -1,4 +1,74 @@
-# CHANGES
+* version 3.6.1 - 2024-11-09
+    * Search page: add 'layer' as advanced option (already exists on reverse page)
+    * NPM package updates: Svelte 5.1
+
+* version 3.6.0 - 2024-10-20
+    * Reverse page: Remove click handler when switching other page. Thanks ericgrosso
+    * Reverse page: Fix test that longitude is filled on form submit. Thanks ericgrosso
+    * NPM package updates: eslint 8->9, Svelte 4->5
+    * Minimum required nodejs version to compile (rollup) is now 16
+
+* version 3.5.3 - 2024-05-06
+    * Search page: Set HTML page title for structured searches, too
+    * NPM package updates (not eslint 8->9, that requires a lot of work)
+
+* version 3.5.2 - 2024-04-05
+    * Detail page: Link to postcode search not includes the country code
+    * test-suite: fix typos based on a codespell run
+    * NPM package updates (Svelte 4.2)
+
+* version 3.5.1 - 2024-02-14
+    * Automatic release creation for 3.5.0 failed on Github Actions
+
+* version 3.5.0 - 2024-02-14
+    * Requires nodejs version 18 now
+    * Reverse page: add optional 'layer' parameter
+    * NPM package updates (Puppeteer 21 => 22, Rollup 3 => 4)
+    * Documentation: Show how to install into a nominatim-docker installation
+
+* version 3.4.0 - 2023-08-29
+    * Search map: delete old viewbox rectangle before adding a new one
+    * Details page: Allow searching for negative OSM ids.
+    * Details page: Nominatim started returning empty hash instead of empty array when a place has no
+       names
+    * test-suite: Nominatim no longer returns streets as children of a city. Adjusted test to
+       look for children of a street instead
+    * NPM package updates
+
+* version 3.3.0 - 2023-06-26
+    * Reverse map: show search position (red circle) also when no search results
+    * test-suite: remove httpbin HTTP calls, server is unreliable
+    * test-suite: replace eslint-plugin-svelte3 with eslint-plugin-svelte plus lint fixes
+    * NPM package updates (Bootstrap 5.3, Leaflet 1.9.4)
+    * NPM package updates (Svelte 3.x => 4.0)
+
+* version 3.2.12 - 2023-04-04
+    * Reverse page: remove uncommon zoom labels, align with Nominatim 4.x
+    * NPM package updates
+
+* version 3.2.11 - 2023-03-08
+    * Configuration: You can now set Map_Default_Bounds as alternative to lat,lon, zoom. Thanks Piskvor
+    * NPM package updates
+
+* version 3.2.10 - 2023-01-06
+
+    * Search page: When searching for OSM URL redirect to detail page automatically
+    * Reverse page: Search for "12.34%2C56.78" now also auto-splits into two fields
+    * Detail page: Another link to documentation about postcodes
+    * NPM package updates
+
+* version 3.2.9 - 2022-11-16
+
+    * Fix: For places tagged building=yes display the formatted label 'Building', not 'Yes'
+    * migrate remaining modules to ESM style (import instead of require)
+    * NPM package updates
+    * test suite: use JSON files for mocha and eslint configuration
+    * test suite: update outdated Github Actions
+
+* version 3.2.8 - 2022-09-26
+
+    * Use OSM's preferred tile URL for faster map loading
+    * NPM package updates
 
 * version 3.2.7 - 2022-08-07
 
@@ -40,7 +110,7 @@
 
 * version 3.1.0 - 2021-04-26
 
-    * Configuration: new options to set API endpoint headers and additional paramters, thanks petoc
+    * Configuration: new options to set API endpoint headers and additional parameters, thanks petoc
     * Test suite: New test suite using a headless browser for UI interaction, thanks darkshredder
     * Fix: Links to API URL weren't displayed after a search
     * Fix: On result pages the map icons were not cleared between searches (caching issue)
@@ -68,8 +138,8 @@
 * version 3.0.2 - 2021-03-05
 
     * Details page: don't print 'null' when postcode is missing
-    * Details page: make sure links to children,hierarcy update after pageload, thx LiteratimBi for the report
-    * Details page: in hierachy list all addresslines were marked unused (grayed out)
+    * Details page: make sure links to children,hierarchy update after pageload, thx LiteratimBi for the report
+    * Details page: in hierarchy list all addresslines were marked unused (grayed out)
     * Details page: API doesn't always return address keywords
     * PageLinks/ReverseLink: fix warnings when properties not set
 
@@ -124,7 +194,7 @@
 
     * Reverse search: click on map triggers new search
     * Report-issue modal from version 1 was missing
-    * Removed search-url-params polyfill. Svelte doesnt support MSIE11 either
+    * Removed search-url-params polyfill. Svelte doesn't support MSIE11 either
 
 * version 2.0.1 - 2021-01-31
 

@@ -36,7 +36,7 @@ Svelte. Version 3 added theme and easier configuration.
 The `test/` setup uses [Mocha](https://mochajs.org/) to run tests. Tests use [Puppeteer](https://pptr.dev/) to control a Google Chrome headless browser and evaluate with [Assert](https://nodejs.org/api/assert.html).
 
 
-* Run integration test suite (configuration in `.mocharc.js`)
+* Run integration test suite (configuration in `.mocharc.json`)
 
    ```
    yarn test
@@ -53,7 +53,7 @@ The `test/` setup uses [Mocha](https://mochajs.org/) to run tests. Tests use [Pu
    yarn run rollup -c && yarn run mocha test/details.js
    ```
 
-* Run syntax linter (configuration in `.eslint.js`)
+* Run syntax linter (configuration in `.eslint.json`)
 
    ```
    yarn lint
@@ -66,7 +66,7 @@ The `test/` setup uses [Mocha](https://mochajs.org/) to run tests. Tests use [Pu
 
 2. Update `CHANGES.md` file
 
-3. Commit your changes: `git add... `, `git commit ...`, `git push ...` etc
+3. Commit your changes: `git add ... `, `git commit ...`, `git push ...` etc
 
 4. Tag release: `git tag THE_VERSION_NUMBER`, `git push --tags`
 

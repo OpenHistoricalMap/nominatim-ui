@@ -20,14 +20,15 @@
       zoom: (search_params.get('zoom') > 1
         ? Number(search_params.get('zoom'))
         : Number(Nominatim_Config.Reverse_Default_Search_Zoom)),
+      layer: search_params.get('layer'),
       format: 'jsonv2'
     };
 
-    if (api_request_params.lat || api_request_params.lat) {
+    if (api_request_params.lat && api_request_params.lon) {
 
       fetch_from_api('reverse', api_request_params, function (data) {
+        position_marker = [api_request_params.lat, api_request_params.lon];
         if (data && !data.error) {
-          position_marker = [api_request_params.lat, api_request_params.lon];
           results_store.set([data]);
         } else {
           results_store.set([]);
@@ -53,7 +54,10 @@
 </script>
 
 <Header>
-  <SearchSectionReverse {...api_request_params} />
+  <SearchSectionReverse lat={api_request_params.lat}
+                        lon={api_request_params.lon}
+                        zoom={api_request_params.zoom}
+                        api_request_params={api_request_params} />
 </Header>
 
 <div id="content">
