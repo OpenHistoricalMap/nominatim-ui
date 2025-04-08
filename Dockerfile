@@ -9,4 +9,6 @@ RUN npm run build
 
 FROM nginx:stable-alpine
 COPY nginx.conf /etc/nginx/nginx.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
+
+RUN mkdir -p /usr/share/nginx/html/ui
+COPY --from=builder /app/dist /usr/share/nginx/html/ui/
