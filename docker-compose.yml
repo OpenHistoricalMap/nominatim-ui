@@ -1,0 +1,10 @@
+services:
+  nominatim:
+    image: nominatim:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '9080:9080'
+    volumes:
+      - ./:/app
